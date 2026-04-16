@@ -1,9 +1,8 @@
+'EOF'
 name: Build Windows EXE
 
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+  workflow_dispatch:  # Solo manual, no en cada push
 
 jobs:
   build:
@@ -22,6 +21,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller edge-tts TikTokLive pydub
     
+    - name: Download FFmpeg
+      run: |
+        Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
+        Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg_temp"
+        Copy-Item "ffmpeg_temp/ffmpeg-*-essentials_build/bin/ffmpeg.exe" -Destination "ffmpeg.exe"
+        Copy-Item "ffmpeg_temp/ffmpeg-*-essentials_build/bin/ffprobe.exe" -Destination "ffprobe.exe"
+        Remove-Item "ffmpeg.zip"
+        Remove-Item "ffmpeg_temp" -Recurse -Force
+    
     - name: Build EXE
       run: |
         pyinstaller --onefile --windowed --name=TikTokTTSBot --add-binary=ffmpeg.exe;. --add-binary=ffprobe.exe;. --hidden-import=edge_tts --hidden-import=TikTokLive --hidden-import=TikTokLive.events --hidden-import=pydub --hidden-import=asyncio --collect-all=edge_tts --clean --noconfirm bot.py
@@ -31,3 +39,4 @@ jobs:
       with:
         name: TikTokTTSBot-Windows
         path: dist/TikTokTTSBot.exe
+EOF
