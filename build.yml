@@ -1,0 +1,35 @@
+ 'EOF'
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller edge-tts TikTokLive pydub
+    
+    - name: Build EXE
+      run: |
+        pyinstaller --onefile --windowed --name=TikTokTTSBot --add-binary=ffmpeg.exe;. --add-binary=ffprobe.exe;. --hidden-import=edge_tts --hidden-import=TikTokLive --hidden-import=TikTokLive.events --hidden-import=pydub --hidden-import=asyncio --collect-all=edge_tts --clean --noconfirm bot.py
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: TikTokTTSBot-Windows
+        path: dist/TikTokTTSBot.exe
+EOF
