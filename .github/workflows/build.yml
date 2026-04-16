@@ -1,3 +1,4 @@
+'EOF'
 name: Build Windows EXE
 
 on:
@@ -10,10 +11,10 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     
@@ -21,15 +22,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller edge-tts TikTokLive pydub
-    
-    - name: Download FFmpeg
-      run: |
-        Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile "ffmpeg.zip"
-        Expand-Archive -Path "ffmpeg.zip" -DestinationPath "ffmpeg_temp"
-        Copy-Item "ffmpeg_temp/ffmpeg-*-essentials_build/bin/ffmpeg.exe" -Destination "ffmpeg.exe"
-        Copy-Item "ffmpeg_temp/ffmpeg-*-essentials_build/bin/ffprobe.exe" -Destination "ffprobe.exe"
-        Remove-Item "ffmpeg.zip"
-        Remove-Item "ffmpeg_temp" -Recurse -Force
     
     - name: Build EXE
       run: |
@@ -40,3 +32,4 @@ jobs:
       with:
         name: TikTokTTSBot-Windows
         path: dist/TikTokTTSBot.exe
+EOF
